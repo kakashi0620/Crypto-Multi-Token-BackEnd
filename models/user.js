@@ -1,32 +1,64 @@
 const mongoose = require("mongoose");
 
 const userSchema = mongoose.Schema({
-    name: {
+    userName: {
         type: String,
         required: true
     },
-    birthday: {
-        type: Date,
-        required: true
-    },
-    unit: {
+    userId: {
         type: String,
         required: true
     },
-    group: {
-        type: Number,
+    fullName: {
+        type: String,
+        required: true
+    },
+    emailAddress: {
+        type: String,
         default: true
     },
-    email: {
+    permanentAddress: {
         type: String,
-        required: true
+        required: false
     },
-    password: {
+    country: {
         type: String,
-        required: true
+        required: false
     },
-    isAdmin: {
-        type: Boolean,
+    mobileNumber: {
+        type: String,
+        default: false
+    },
+    telegramId: {
+        type: String,
+        default: false
+    },
+    twitterId: {
+        type: String,
+        default: false
+    },
+    discordId: {
+        type: String,
+        default: false
+    },
+    loginWallet: {
+        type: String,
+        default: true
+    },
+    btcWallet: {
+        type: String,
+        default: false
+    },
+    solanaWallet: {
+        type: String,
+        default: false
+    },
+    anotherWallet1: {
+        type: String,
+        default: false
+    },
+    anotherWallet2: {
+        type: String,
         default: false
     }
 });

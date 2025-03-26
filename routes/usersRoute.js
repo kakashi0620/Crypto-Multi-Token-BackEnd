@@ -5,22 +5,24 @@ const User = require("../models/user");
 
 // Registration
 router.post("/register", async (req, res) => {
-    // console.log(req.body.email);
-    // const existedUser = await User.find({email: req.body.email});
-    // console.log(existedUser);
-    // if (existedUser) {
-    //     res.send("The same email is already exist!");
-    //     return;
-    // }
-    // console.log('reasdfasdfasdfasdfasd!!!!');
 
     const newUser = new User({
-        name: req.body.name,
-        birthday: req.body.birthday,
-        unit: req.body.unit,
-        group: req.body.group,
-        email: req.body.email,
-        password: req.body.password,
+        userName: req.body.userName,
+        userId: req.body.userId,
+        fullName: req.body.fullName,
+        emailAddress: req.body.emailAddress,
+        permanentAddress: req.body.permanentAddress,
+        country: req.body.country,
+        mobileNumber: req.body.mobileNumber,
+        telegramId: req.body.telegramId,
+        twitterId: req.body.twitterId,
+        discordId: req.body.discordId,
+        loginWallet: req.body.loginWallet,
+        btcWallet: req.body.btcWallet,
+        solanaWallet: req.body.solanaWallet,
+        anotherWallet1: req.body.anotherWallet1,
+        anotherWallet2: req.body.anotherWallet2,
+
     });
 
     try {
@@ -38,15 +40,15 @@ router.post("/login", async (req, res) => {
     const { email, password } = req.body;
     try {
         const existedUser = await User.findOne({
-            email: email,
-            password: password
+            loginWallet: loginWallet,
         });
 
         if (existedUser) {
             const userData = {
-                name: existedUser.name,
-                email: existedUser.email,
-                isAdmin: existedUser.isAdmin,
+                userName: existedUser.userName,
+                userId: existedUser.userId,
+                emailAddress: existedUser.emailAddress,
+                loginWallet: existedUser.loginWallet,
                 _id: existedUser._id,
             }
             res.send(userData);
