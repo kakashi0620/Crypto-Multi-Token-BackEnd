@@ -1,0 +1,48 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "server": "nodemon index.js",
+    "initdb": "node initdb.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "archiver": "^7.0.1",
+    "bcrypt": "^5.1.0",
+    "body-parser": "^1.20.2",
+    "cloudinary": "^1.37.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "csurf": "^1.10.0",
+    "dotenv": "^16.1.4",
+    "express": "^4.18.2",
+    "express-async-handler": "^1.2.0",
+    "express-rate-limit": "^7.5.0",
+    "express-sslify": "^1.2.0",
+    "fs": "^0.0.1-security",
+    "helmet": "^8.0.0",
+    "ip": "^2.0.1",
+    "jsonwebtoken": "^9.0.0",
+    "mongodb": "^6.12.0",
+    "mongoose": "^7.3.0",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.3",
+    "razorpay": "^2.8.6",
+    "sharp": "^0.32.1",
+    "slugify": "^1.6.6",
+    "systeminformation": "^5.24.8",
+    "uniqid": "^5.4.0",
+    "unzipper": "^0.12.3",
+    "xss-clean": "^0.1.4"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}

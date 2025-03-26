@@ -1,0 +1,18 @@
+[
+  {
+    "_id": "6778309c13fdaa78f28cf071",
+    "user_id": "admin1",
+    "name": "ChoeHakSong",
+    "role": "admin",
+    "password": "$2b$10$slJGPiv2K/AL5oAqqguIdOFrN.snpJpXOi70izfdZUoZlfN/yYhg2",
+    "birthday": "1987-03-14T00:00:00.000Z",
+    "unit": "RNU1",
+    "team": "RSE",
+    "netkey_user": "chs0314",
+    "netkey_machine": "43-chs0314",
+    "group": 1,
+    "createdAt": "2025-01-03T18:46:52.153Z",
+    "updatedAt": "2025-01-03T18:46:52.153Z",
+    "__v": 0
+  }
+]
