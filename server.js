@@ -16,10 +16,12 @@ const PORT = process.env.PORT || 5000;
 dbConnect();
 
 const usersRoute = require("./routes/usersRoute");
+const dealsRoute = require("./routes/dealsRoute");
 
 app.use(express.json());
 
 app.use("/api/users", usersRoute); //const userModel = mongoose.model("user", userSchema);
+app.use("/api/deals", dealsRoute); //const dealModel = mongoose.model("deal", dealSchema);
 
 const now = new Date();
 console.log(`Starting on ${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`);
