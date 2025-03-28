@@ -60,6 +60,10 @@ const userSchema = mongoose.Schema({
     anotherWallet2: {
         type: String,
         default: false
+    },
+    referral: {
+        type: String,
+        default: false
     }
 });
 

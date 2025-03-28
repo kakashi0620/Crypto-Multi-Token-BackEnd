@@ -22,7 +22,7 @@ router.post("/register", async (req, res) => {
         solanaWallet: req.body.solanaWallet,
         anotherWallet1: req.body.anotherWallet1,
         anotherWallet2: req.body.anotherWallet2,
-
+        referral: req.body.referral
     });
 
     try {
@@ -49,6 +49,7 @@ router.post("/login", async (req, res) => {
                 userId: existedUser.userId,
                 emailAddress: existedUser.emailAddress,
                 loginWallet: existedUser.loginWallet,
+                referral: existedUser.referral,
                 _id: existedUser._id,
             }
             res.send(userData);
