@@ -5,6 +5,8 @@ const User = require("../models/user");
 
 // Registration
 router.post("/register", async (req, res) => {
+    
+    console.log('register request received.')
 
     const newUser = new User({
         userName: req.body.userName,
@@ -33,6 +35,16 @@ router.post("/register", async (req, res) => {
         return res.status(400).json({ message: error });
     }
 });
+
+
+router.post("/getuser", async (req, res) => {
+    console.log(`get user signal received => ${req.body.address}`)
+    try {
+        res.send(await User.find({ loginWallet: req.body.address }));
+      } catch (error) {
+        return res.status(500).json({ message: error.message });
+      }
+  });
 
 
 // Login
