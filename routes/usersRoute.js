@@ -6,7 +6,7 @@ const User = require("../models/user");
 // Registration
 router.post("/register", async (req, res) => {
     
-    console.log('register request received.')
+    console.log(`register request received => loginWallet: ${req.body.loginWallet}`)
 
     const newUser = new User({
         userName: req.body.userName,
@@ -40,7 +40,7 @@ router.post("/register", async (req, res) => {
 router.post("/getuser", async (req, res) => {
     console.log(`get user signal received => ${req.body.address}`)
     try {
-        res.send(await User.find({ loginWallet: req.body.address }));
+        res.send(await User.findOne({ loginWallet: req.body.address }));
       } catch (error) {
         return res.status(500).json({ message: error.message });
       }
@@ -80,6 +80,17 @@ router.get("/getAllUsers", async (req, res) => {
     try {
         const currentUsers = await User.find();
         res.send(currentUsers);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+});
+
+router.get("/getUserCount", async (req, res) => {
+    try {
+        const currentUsers = await User.find();
+        console.log('currentUsers', currentUsers, currentUsers.length)
+        res.send(currentUsers.length.toString());
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
