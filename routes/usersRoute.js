@@ -6,11 +6,12 @@ const User = require("../models/user");
 // Registration
 router.post("/register", async (req, res) => {
     
-    console.log(`register request received => loginWallet: ${req.body.loginWallet}`)
+    console.log(`register request received => loginWallet: ${req.body.enterDate}`)
 
     const newUser = new User({
         userName: req.body.userName,
         userId: req.body.userId,
+        enterDate: req.body.enterDate,
         fullName: req.body.fullName,
         emailAddress: req.body.emailAddress,
         permanentAddress: req.body.permanentAddress,
