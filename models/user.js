@@ -61,7 +61,7 @@ const userSchema = mongoose.Schema({
         type: String,
         default: false
     },
-    referral: {
+    referred_by: {
         type: String,
         default: false
     }

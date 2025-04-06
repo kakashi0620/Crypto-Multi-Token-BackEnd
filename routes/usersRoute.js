@@ -24,7 +24,7 @@ router.post("/register", async (req, res) => {
         solanaWallet: req.body.solanaWallet,
         anotherWallet1: req.body.anotherWallet1,
         anotherWallet2: req.body.anotherWallet2,
-        referral: req.body.referral
+        referred_by: req.body.referred_by
     });
 
     try {
@@ -61,7 +61,7 @@ router.post("/login", async (req, res) => {
                 userId: existedUser.userId,
                 emailAddress: existedUser.emailAddress,
                 loginWallet: existedUser.loginWallet,
-                referral: existedUser.referral,
+                referred_by: existedUser.referred_by,
                 _id: existedUser._id,
             }
             res.send(userData);
@@ -89,7 +89,7 @@ router.get("/getAllUsers", async (req, res) => {
 router.get("/getUserCount", async (req, res) => {
     try {
         const currentUsers = await User.find();
-        console.log('currentUsers', currentUsers, currentUsers.length)
+        
         res.send(currentUsers.length.toString());
     } catch (error) {
         console.error(error);
