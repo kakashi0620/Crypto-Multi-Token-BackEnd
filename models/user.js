@@ -68,6 +68,10 @@ const userSchema = mongoose.Schema({
     referred_by: {
         type: String,
         default: false
+    },
+    isAdmin: {
+        type: Boolean,
+        default: false
     }
 });
 

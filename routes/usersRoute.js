@@ -29,9 +29,7 @@ router.post("/register", async (req, res) => {
     });
 
     try {
-        await newUser.save()
-
-        res.send("User registered successfully!");
+        res.send(await newUser.save());
     } catch (error) {
         return res.status(400).json({ message: error });
     }
@@ -70,9 +68,7 @@ router.post("/update", async (req, res) => {
     user.referred_by = req.body.referred_by;
 
     try {
-        await user.save()
-
-        res.send("User update successfully!");
+        res.send(await user.save());
     } catch (error) {
         return res.status(400).json({ message: error });
     }
