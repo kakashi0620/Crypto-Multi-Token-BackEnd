@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const dealSchema = mongoose.Schema({
-    dealName: {
+    name: {
         type: String,
         required: true
     },
@@ -17,35 +17,35 @@ const dealSchema = mongoose.Schema({
         type: String,
         default: true
     },
-    tokenPrice: {
+    tokenprice: {
         type: String,
         required: false
     },
-    fullyDilutedValuation: {
+    fdv: {
         type: String,
         required: false
     },
-    initialMarketCap: {
+    mc: {
         type: String,
         default: false
     },
-    vestingSummary: {
+    vest: {
         type: String,
         default: false
     },
-    fundraisingTarget: {
+    fundrasing: {
         type: String,
         default: false
     },
-    fees: {
+    fee: {
         type: String,
         default: false
     },
-    minInvestLimit: {
+    investmin: {
         type: String,
         default: true
     },
-    maxInvestLimit: {
+    investmax: {
         type: String,
         default: false
     },
@@ -53,19 +53,19 @@ const dealSchema = mongoose.Schema({
         type: String,
         default: false
     },
-    webURL: {
+    weburl: {
         type: String,
         default: false
     },
-    twitterURL: {
+    xurl: {
         type: String,
         default: false
     },    
-    discordURL: {
+    discordurl: {
         type: String,
         default: false
     },    
-    telegramURL: {
+    teleurl: {
         type: String,
         default: false
     }

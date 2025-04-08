@@ -1,36 +1,78 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs-extra')
 
 const Deal = require("../models/deal");
 
-// Admin - Get All Deals
-router.get("/getAllDeals", async (req, res) => {
-    try {
-        const currentDeals = await Deal.find();
-        res.send(currentDeals);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server Error');
-    }
+
+const uploadsDir = './upload/';
+
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Multer setup
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, uploadsDir); // Store the file in the uploads directory
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + path.extname(file.originalname)); // Ensure unique file name
+    },
 });
 
-// Admin - Delete the current Deal
-router.delete("/deleteDeal/:id", async (req, res) => {
+const upload = multer({ storage: storage });
+
+// API route to handle image upload and form data submission
+router.post('/create', upload.fields([
+    { name: 'logo', maxCount: 1 },
+    { name: 'banner', maxCount: 1 },
+]), async (req, res) => {
+    const { logo, banner } = req.files;
+    const { name, round, tokenprice, fdv, mc, vest, fundrasing, fee, investmin, investmax, test, weburl, xurl, discordurl, teleurl } = req.body;
+
+    // Check if user already exists
+    // console.log(email);
+    const dealExists = await Deal.findOne({ name });
+    if (dealExists) {
+        return res.status(400).json({ message: 'Deal already exists' });
+    }
+
+    if (!logo || !banner) {
+        return res.status(400).json({ success: false, message: 'Both logo and banner are required.' });
+    }
+
+    const logoUrl = `/uploads/${logo[0].filename}`; // URL to the uploaded logo
+    const bannerUrl = `/uploads/${banner[0].filename}`; // URL to the uploaded banner
+
     try {
-        const court = await Deal.findById(req.params.id);
+        const newDeal = await Deal.create({
+            name,
+            logo: logoUrl,
+            banner: bannerUrl,
+            round,
+            tokenprice,
+            fdv,
+            mc,
+            vest,
+            fundrasing,
+            fee,
+            investmin,
+            investmax,
+            test,
+            weburl,
+            xurl,
+            discordurl,
+            teleurl
+        });
 
-        if (!court) {
-            return res.status(404).json({ message: "No court found" })
-        }
-
-        await Deal.findByIdAndDelete(req.params.id);
-        res.send("Deal deleted successfully");
-
-    } catch (error) {
-        return res.status(500).json({ message: error.message });
+        res.status(200).json({ success: true, message: 'Data and images uploaded successfully!', data: newDeal });
+    } catch (err) {
+        console.error('Error saving deal:', err);
+        res.status(500).json({ success: false, message: 'Error uploading form data' });
     }
 });
-
-
 
 module.exports = router;
