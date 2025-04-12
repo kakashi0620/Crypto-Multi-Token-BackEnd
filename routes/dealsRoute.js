@@ -31,7 +31,7 @@ router.post('/create', upload.fields([
     { name: 'banner', maxCount: 1 },
 ]), async (req, res) => {
     const { logo, banner } = req.files;
-    const { name, round, tokenprice, fdv, mc, vest, fundrasing, fee, investmin, investmax, test, weburl, xurl, discordurl, teleurl } = req.body;
+    const { name, round, tokenprice, fdv, mc, vest, fundrasing, fee, investmin, investmax, test, weburl, xurl, discordurl, teleurl, tc_pulltrust, tc_pinmsg, tc_answer, tc_responsible, tc_acknowledge, tc_allocation, tc_never, dateTime, timezone } = req.body;
 
     // Check if user already exists
     // console.log(email);
@@ -65,7 +65,16 @@ router.post('/create', upload.fields([
             weburl,
             xurl,
             discordurl,
-            teleurl
+            teleurl,
+            tc_pulltrust,
+            tc_pinmsg,
+            tc_answer,
+            tc_responsible,
+            tc_acknowledge,
+            tc_allocation,
+            tc_never,
+            dateTime,
+            timezone
         });
 
         res.status(200).json({ success: true, message: 'Data and images uploaded successfully!', data: newDeal });

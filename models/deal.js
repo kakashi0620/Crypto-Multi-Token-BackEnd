@@ -60,12 +60,48 @@ const dealSchema = mongoose.Schema({
     xurl: {
         type: String,
         default: false
-    },    
+    },
     discordurl: {
         type: String,
         default: false
-    },    
+    },
     teleurl: {
+        type: String,
+        default: false
+    },
+    tc_pulltrust: {
+        type: Boolean,
+        default: false
+    },
+    tc_pinmsg: {
+        type: Boolean,
+        default: false
+    },
+    tc_answer: {
+        type: Boolean,
+        default: false
+    },
+    tc_responsible: {
+        type: Boolean,
+        default: false
+    },
+    tc_acknowledge: {
+        type: Boolean,
+        default: false
+    },
+    tc_allocation: {
+        type: Boolean,
+        default: false
+    },
+    tc_never: {
+        type: Boolean,
+        default: false
+    },
+    dateTime: {
+        type: String,
+        default: false
+    },
+    timezone: {
         type: String,
         default: false
     }
