@@ -44,8 +44,8 @@ router.post('/create', upload.fields([
         return res.status(400).json({ success: false, message: 'Both logo and banner are required.' });
     }
 
-    const logoUrl = `/uploads/${logo[0].filename}`; // URL to the uploaded logo
-    const bannerUrl = `/uploads/${banner[0].filename}`; // URL to the uploaded banner
+    const logoUrl = `${uploadsDir}${logo[0].filename}`; // URL to the uploaded logo
+    const bannerUrl = `${uploadsDir}${banner[0].filename}`; // URL to the uploaded banner
 
     try {
         const newDeal = await Deal.create({
@@ -72,6 +72,15 @@ router.post('/create', upload.fields([
     } catch (err) {
         console.error('Error saving deal:', err);
         res.status(500).json({ success: false, message: 'Error uploading form data' });
+    }
+});
+
+router.get("/getalldeals", async (req, res) => {
+    try {
+        res.send(await Deal.find());
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
     }
 });
 
