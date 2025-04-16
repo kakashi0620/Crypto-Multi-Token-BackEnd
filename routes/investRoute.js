@@ -21,4 +21,13 @@ router.post("/invest", async (req, res) => {
     }
 });
 
+router.post("/getbyuser", async (req, res) => {
+    console.log('get user investment', req.body)
+    try {
+        res.send(await Invest.find({ investor: req.body.userName}));
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+});
+
 module.exports = router;

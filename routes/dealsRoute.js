@@ -126,4 +126,13 @@ router.get("/getalldeals", async (req, res) => {
     }
 });
 
+router.post("/getdeal", async (req, res) => {
+    console.log('get deal received:', req.body.name)
+    try {
+        res.send(await Deal.findOne({ name: req.body.name }));
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+});
+
 module.exports = router;

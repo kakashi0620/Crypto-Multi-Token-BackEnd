@@ -74,7 +74,6 @@ router.post("/update", async (req, res) => {
     }
 });
 
-
 router.post("/getuser", async (req, res) => {
     console.log(`get user signal received => ${req.body.address}`)
     try {
