@@ -97,13 +97,21 @@ const dealSchema = mongoose.Schema({
         type: Boolean,
         default: false
     },
-    dateTime: {
-        type: String,
+    livedate: {
+        type: Date,
+        default: false
+    },
+    createdate: {
+        type: Date,
         default: false
     },
     timezone: {
         type: String,
         default: false
+    },
+    state: {
+        type: String,
+        default: true
     }
 });
 
