@@ -1,4 +1,5 @@
 const express = require('express');
+const cron = require('node-cron');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
@@ -7,6 +8,36 @@ const fs = require('fs-extra')
 const Deal = require("../models/deal");
 
 
+// Update deal state every hour.
+cron.schedule('0 * * * *', async () => {
+    console.log('🔁 Running deal state update job...');
+
+    const deals = await Deal.find();
+
+    const now = new Date();
+
+    for (const deal of deals) {
+        let newState = 'draft';
+        if (deal.state == newState) {
+            const createdPlus24h = new Date(deal.createdate.getTime() + 24 * 60 * 60 * 1000);
+            if (now >= createdPlus24h && now < deal.livedate) {
+                newState = 'upcoming';
+            }
+        } else if (now >= deal.livedate) {
+            newState = 'fundrasing';
+        }
+
+        if (newState !== 'draft' && deal.state !== newState) {
+            deal.state = newState;
+            await deal.save();
+            console.log(`✅ Updated deal "${deal.title}" to state: ${newState}`);
+        }
+    }
+
+    console.log('✅ Deal state update job completed.');
+});
+
+// Upload image
 const uploadsDir = './upload/';
 
 if (!fs.existsSync(uploadsDir)) {
