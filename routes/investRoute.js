@@ -30,6 +30,15 @@ router.post("/getbyuser", async (req, res) => {
     }
 });
 
+router.get('/list/:dealname', async (req, res) => {
+    const { dealname } = req.params;
+    try {
+        res.send(await Invest.find({ dealname: dealname }));
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+});
+
 router.get('/summary/:dealname', async (req, res) => {
     const { dealname } = req.params;
 

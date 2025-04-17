@@ -83,6 +83,15 @@ router.post("/getuser", async (req, res) => {
     }
 });
 
+router.post("/getuserbyname", async (req, res) => {
+    console.log(`get user signal received => ${req.body.userName}`);
+    try {
+        res.send(await User.findOne({ userName: req.body.userName }));
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+});
+
 
 // Login
 router.post("/login", async (req, res) => {
