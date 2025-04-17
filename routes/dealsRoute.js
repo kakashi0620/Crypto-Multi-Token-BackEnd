@@ -17,19 +17,18 @@ cron.schedule('0 * * * *', async () => {
     const now = new Date();
 
     for (const deal of deals) {
-        let newState = 'draft';
+        let newState = 'Draft';
         if (deal.state == newState) {
             const createdPlus24h = new Date(deal.createdate.getTime() + 24 * 60 * 60 * 1000);
-            if (now >= createdPlus24h && now < deal.livedate) {
-                newState = 'upcoming';
+            if (now.getTime() >= createdPlus24h.getTime() && now.getTime() < deal.livedate.getTime()) {
+                newState = 'Upcoming';
             }
-        } else if (now >= deal.livedate) {
-            newState = 'fundrasing';
+        } else if (now.getTime() >= deal.livedate.getTime()) {
+            newState = 'Fundraising';
         }
 
-        if (newState !== 'draft' && deal.state !== newState) {
-            deal.state = newState;
-            await deal.save();
+        if (newState !== 'Draft' && deal.state !== newState) {
+            await Deal.updateOne({ _id: deal._id }, { $set: { state: newState } });
             console.log(`✅ Updated deal "${deal.title}" to state: ${newState}`);
         }
     }
