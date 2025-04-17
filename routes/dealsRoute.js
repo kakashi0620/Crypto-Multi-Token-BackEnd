@@ -118,6 +118,7 @@ router.post('/create', upload.fields([
 });
 
 router.get("/getalldeals", async (req, res) => {
+    console.log("get all deal received.")
     try {
         res.send(await Deal.find());
     } catch (error) {
@@ -130,6 +131,15 @@ router.post("/getdeal", async (req, res) => {
     console.log('get deal received:', req.body.name)
     try {
         res.send(await Deal.findOne({ name: req.body.name }));
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+});
+
+router.post("/getdealbystate", async (req, res) => {
+    console.log('get deal by state received:', req.body.state)
+    try {
+        res.send(await Deal.find({ state: req.body.state }));
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
