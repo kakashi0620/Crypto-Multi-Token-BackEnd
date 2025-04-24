@@ -6,10 +6,11 @@ const path = require('path');
 const fs = require('fs-extra')
 
 const Deal = require("../models/deal");
+const Invest = require("../models/invest");
 
 
 // Update deal state every hour.
-cron.schedule('0 * * * *', async () => {
+cron.schedule('* * * * *', async () => {
     console.log('🔁 Running deal state update job...');
 
     const deals = await Deal.find();
@@ -18,18 +19,48 @@ cron.schedule('0 * * * *', async () => {
 
     for (const deal of deals) {
         let newState = 'Draft';
-        if (deal.state == newState) {
+        if (deal.state == 'Draft') {
             const createdPlus24h = new Date(deal.createdate.getTime() + 24 * 60 * 60 * 1000);
             if (now.getTime() >= createdPlus24h.getTime() && now.getTime() < deal.livedate.getTime()) {
                 newState = 'Upcoming';
             }
-        } else if (now.getTime() >= deal.livedate.getTime()) {
-            newState = 'Fundraising';
-        }
+        } else if (deal.state == 'Fundraising') {
+            const result = await Invest.aggregate([
+                { $match: { dealname: deal.name } },
+                {
+                    $addFields: {
+                        amountAsNumber: { $toDouble: "$amount" } // Convert string to number
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$dealname",
+                        totalAmount: { $sum: "$amountAsNumber" } // Sum converted number
+                    }
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        dealname: "$_id",
+                        totalAmount: 1
+                    }
+                }
+            ]);
 
+            if (result.length > 0) {
+                const investamount = result[0].totalAmount * (100 - deal.fee) / 100
+                if (investamount >= deal.fundrasing)
+                    newState = 'Awaiting TGE';
+            }
+        } else if (deal.state == 'Fundraising') {
+            if (now.getTime() >= deal.livedate.getTime()) {
+                newState = 'Fundraising';
+            }
+        }
+        
         if (newState !== 'Draft' && deal.state !== newState) {
             await Deal.updateOne({ _id: deal._id }, { $set: { state: newState } });
-            console.log(`✅ Updated deal "${deal.title}" to state: ${newState}`);
+            console.log(`✅ Updated deal "${deal.state}" to state: ${newState}`);
         }
     }
 
@@ -139,6 +170,14 @@ router.post("/getdealbystate", async (req, res) => {
     console.log('get deal by state received:', req.body.state)
     try {
         res.send(await Deal.find({ state: req.body.state }));
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+});
+
+router.get("/getfordistribution", async (req, res) => {
+    try {
+        res.send(await Deal.find({ state: { $in: ['Awaiting TGE', 'Distributing'] } }));
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
