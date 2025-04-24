@@ -29,7 +29,15 @@ const dealSchema = mongoose.Schema({
         type: String,
         default: false
     },
-    vest: {
+    vesttge: {
+        type: String,
+        default: false
+    },
+    vestcliff: {
+        type: String,
+        default: false
+    },
+    vestgap: {
         type: String,
         default: false
     },

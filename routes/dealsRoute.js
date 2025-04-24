@@ -10,7 +10,7 @@ const Invest = require("../models/invest");
 
 
 // Update deal state every hour.
-cron.schedule('0 * * * *', async () => {
+cron.schedule('* * * * *', async () => {
     console.log('🔁 Running deal state update job...');
 
     const deals = await Deal.find();
@@ -19,12 +19,12 @@ cron.schedule('0 * * * *', async () => {
 
     for (const deal of deals) {
         let newState = 'Draft';
-        if (deal.state == 'Draft') {
+        if (deal.state === 'Draft') {
             const createdPlus24h = new Date(deal.createdate.getTime() + 24 * 60 * 60 * 1000);
             if (now.getTime() >= createdPlus24h.getTime() && now.getTime() < deal.livedate.getTime()) {
                 newState = 'Upcoming';
             }
-        } else if (deal.state == 'Fundraising') {
+        } else if (deal.state === 'Fundraising') {
             const result = await Invest.aggregate([
                 { $match: { dealname: deal.name } },
                 {
@@ -48,12 +48,12 @@ cron.schedule('0 * * * *', async () => {
             ]);
 
             if (result.length > 0) {
-                const investamount = result[0].totalAmount * (100 - deal.fee) / 100
+                const investamount = result[0].totalAmount
                 if (investamount >= deal.fundrasing)
                     newState = 'Awaiting TGE';
             }
-        } else if (deal.state == 'Fundraising') {
-            if (now.getTime() >= deal.livedate.getTime()) {
+        } else if (deal.state === 'Upcoming') {
+            if (now.getTime() >= new Date(deal.livedate).getTime()) {
                 newState = 'Fundraising';
             }
         }
@@ -92,7 +92,7 @@ router.post('/create', upload.fields([
     { name: 'banner', maxCount: 1 },
 ]), async (req, res) => {
     const { logo, banner } = req.files;
-    const { name, round, tokenprice, fdv, mc, vest, fundrasing, fee, investmin, investmax, test, weburl, xurl, discordurl, teleurl, tc_pulltrust, tc_pinmsg, tc_answer, tc_responsible, tc_acknowledge, tc_allocation, tc_never, livedate, createdate, timezone, state } = req.body;
+    const { name, round, tokenprice, fdv, mc, vesttge, vestcliff, vestgap, fundrasing, fee, investmin, investmax, test, weburl, xurl, discordurl, teleurl, tc_pulltrust, tc_pinmsg, tc_answer, tc_responsible, tc_acknowledge, tc_allocation, tc_never, livedate, createdate, timezone, state } = req.body;
 
     // Check if user already exists
     // console.log(email);
@@ -117,7 +117,9 @@ router.post('/create', upload.fields([
             tokenprice,
             fdv,
             mc,
-            vest,
+            vesttge,
+            vestcliff,
+            vestgap,
             fundrasing,
             fee,
             investmin,
