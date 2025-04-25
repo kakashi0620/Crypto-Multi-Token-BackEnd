@@ -13,44 +13,14 @@ const Invest = require("../models/invest");
 cron.schedule('* * * * *', async () => {
     console.log('🔁 Running deal state update job...');
 
-    const deals = await Deal.find();
-
     const now = new Date();
-
+    const deals = await Deal.find();
     for (const deal of deals) {
         let newState = 'Draft';
         if (deal.state === 'Draft') {
             const createdPlus24h = new Date(deal.createdate.getTime() + 24 * 60 * 60 * 1000);
             if (now.getTime() >= createdPlus24h.getTime() && now.getTime() < deal.livedate.getTime()) {
                 newState = 'Upcoming';
-            }
-        } else if (deal.state === 'Fundraising') {
-            const result = await Invest.aggregate([
-                { $match: { dealname: deal.name } },
-                {
-                    $addFields: {
-                        amountAsNumber: { $toDouble: "$amount" } // Convert string to number
-                    }
-                },
-                {
-                    $group: {
-                        _id: "$dealname",
-                        totalAmount: { $sum: "$amountAsNumber" } // Sum converted number
-                    }
-                },
-                {
-                    $project: {
-                        _id: 0,
-                        dealname: "$_id",
-                        totalAmount: 1
-                    }
-                }
-            ]);
-
-            if (result.length > 0) {
-                const investamount = result[0].totalAmount
-                if (investamount >= deal.fundrasing)
-                    newState = 'Awaiting TGE';
             }
         } else if (deal.state === 'Upcoming') {
             if (now.getTime() >= new Date(deal.livedate).getTime()) {
