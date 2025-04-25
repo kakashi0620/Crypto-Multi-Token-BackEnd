@@ -176,6 +176,14 @@ router.post("/getdealbystate", async (req, res) => {
     }
 });
 
+router.get("/getgallery", async (req, res) => {
+    try {
+        res.send(await Deal.find({ state: { $in: ['Upcoming', 'Fundraising'] } }));
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+});
+
 router.get("/getfordistribution", async (req, res) => {
     try {
         res.send(await Deal.find({ state: { $in: ['Awaiting TGE', 'Distributing'] } }));

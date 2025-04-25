@@ -17,7 +17,7 @@ router.get("/getAllDistributions", async (req, res) => {
 // Admin - Delete the current Distribution
 router.post("/add", async (req, res) => {
 
-    console.log(`${req.body.dealname} Add a new schedule.\nType: ${req.body.type}, Date: ${req.body.date}, Percent: ${req.body.percent}`)
+    console.log(`${req.body.dealname} Add a new distribution.\nType: ${req.body.type}, Date: ${req.body.date}, Percent: ${req.body.percent}`)
 
     const newDistribution = new Distribution({
         dealname: req.body.dealname,
@@ -39,6 +39,46 @@ router.get("/getbydeal/:dealname", async (req, res) => {
         res.send(await Distribution.find({ dealname: dealname }));
     } catch (error) {
         return res.status(500).json({ message: error.message });
+    }
+});
+
+router.get("/summary", async (req, res) => {
+    const { dealname, date } = req.query;
+    console.log(`distribution summary received => dealname: ${dealname}, date: ${date}`)
+
+    try {
+        const targetDate = new Date(date);
+        const nextSchedule = await Distribution.findOne({
+            dealname,
+            date: { $gt: targetDate }
+        }).sort({ date: 1 });
+
+        if (nextSchedule === null) {
+            res.json({
+                type: 'No schedule',
+                date: 'No schedule',
+                totalReceived: 0,
+                percent: 0
+            });
+        }
+        else {
+            const schedulesBefore = await Distribution.find({
+                dealname,
+                date: { $lte: targetDate }
+            });
+
+            const totalReceived = schedulesBefore.reduce((sum, item) => sum + item.percent, 0);
+            res.json({
+                type: nextSchedule.type,
+                date: nextSchedule.date,
+                totalReceived,
+                percent: nextSchedule.percent
+            });
+        }
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Something went wrong' });
     }
 });
 
