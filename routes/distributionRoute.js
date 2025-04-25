@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
+const Deal = require("../models/deal");
 const Distribution = require("../models/distribution");
+
 
 // Admin - Get All Distributions
 router.get("/getAllDistributions", async (req, res) => {
@@ -16,9 +18,23 @@ router.get("/getAllDistributions", async (req, res) => {
 
 // Admin - Delete the current Distribution
 router.post("/add", async (req, res) => {
-
     console.log(`${req.body.dealname} Add a new distribution.\nType: ${req.body.type}, Date: ${req.body.date}, Percent: ${req.body.percent}`)
 
+    // Update deal state
+    try {
+        const deal = await Deal.findOne({ name: req.body.dealname })
+
+        const newState = 'Distributing'
+        if (deal.state !== newState) {
+            await Deal.updateOne({ _id: deal._id }, { $set: { state: newState } });
+            console.log('Deal state updated to Distributing.')
+        }
+    }
+    catch(e) {
+        console.log('Fetching deal data error:', e)
+    }
+
+    // Update schedule
     const newDistribution = new Distribution({
         dealname: req.body.dealname,
         type: req.body.type,

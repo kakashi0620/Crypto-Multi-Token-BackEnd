@@ -6,11 +6,10 @@ const path = require('path');
 const fs = require('fs-extra')
 
 const Deal = require("../models/deal");
-const Invest = require("../models/invest");
 
 
 // Update deal state every hour.
-cron.schedule('* * * * *', async () => {
+cron.schedule('0 * * * *', async () => {
     console.log('🔁 Running deal state update job...');
 
     const now = new Date();
