@@ -95,7 +95,6 @@ router.post('/create', upload.fields([
     const { name, round, tokenprice, fdv, mc, vesttge, vestcliff, vestgap, fundrasing, fee, investmin, investmax, test, weburl, xurl, discordurl, teleurl, tc_pulltrust, tc_pinmsg, tc_answer, tc_responsible, tc_acknowledge, tc_allocation, tc_never, livedate, createdate, timezone, state } = req.body;
 
     // Check if user already exists
-    // console.log(email);
     const dealExists = await Deal.findOne({ name });
     if (dealExists) {
         return res.status(400).json({ message: 'Deal already exists' });
