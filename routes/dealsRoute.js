@@ -26,7 +26,7 @@ cron.schedule('0 * * * *', async () => {
                 newState = 'Fundraising';
             }
         }
-        
+
         if (newState !== 'Draft' && deal.state !== newState) {
             await Deal.updateOne({ _id: deal._id }, { $set: { state: newState } });
             console.log(`✅ Updated deal "${deal.state}" to state: ${newState}`);
@@ -54,6 +54,18 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
+
+// For only image update.
+router.post('/upload', upload.single('image'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    // If using static path
+    const filePath = `${uploadsDir}${req.file.filename}`;
+
+    res.json({ path: filePath });
+});
 
 // API route to handle image upload and form data submission
 router.post('/create', upload.fields([
@@ -114,6 +126,27 @@ router.post('/create', upload.fields([
     } catch (err) {
         console.error('Error saving deal:', err);
         res.status(500).json({ success: false, message: 'Error uploading form data' });
+    }
+});
+
+router.put('/update/:id', async (req, res) => {
+    console.log('Deal update received.', req.params.id)
+    const { id } = req.params;
+    const { name, logo, banner, round, tokenprice, fdv, mc, vesttge, vestcliff, vestgap, fundrasing, fee, investmin, investmax, test, weburl, xurl, discordurl, teleurl, tc_pulltrust, tc_pinmsg, tc_answer, tc_responsible, tc_acknowledge, tc_allocation, tc_never, livedate, createdate, timezone, state } = req.body;
+    console.log(`logo: ${logo}, banner: ${banner}`)
+    try {
+        const updateFields = {
+            name, round, tokenprice, fdv, mc, vesttge, vestcliff, vestgap, fundrasing, fee, investmin, investmax, test, weburl, xurl, discordurl, teleurl, tc_pulltrust, tc_pinmsg, tc_answer, tc_responsible, tc_acknowledge, tc_allocation, tc_never, livedate, createdate, timezone, state
+        };
+
+        if (logo) updateFields.logo = logo;
+        if (banner) updateFields.banner = banner;
+
+        const updated = await Deal.findByIdAndUpdate(id, updateFields, { new: true });
+        res.json(updated);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to update deal' });
     }
 });
 
