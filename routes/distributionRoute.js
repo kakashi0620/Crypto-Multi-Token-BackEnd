@@ -123,9 +123,10 @@ router.get("/getcurbatch/:dealname", async (req, res) => {
         })
     }
     else {
-        const err = "Batch not found."
-        console.error(err);
-        res.status(500).json({ error: err });
+        res.json({
+            type: "",
+            percent: 0
+        })
     }
 });
 

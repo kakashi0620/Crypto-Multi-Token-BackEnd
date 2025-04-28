@@ -9,7 +9,7 @@ const Deal = require("../models/deal");
 
 
 // Update deal state every hour.
-cron.schedule('0 * * * *', async () => {
+cron.schedule('* * * * *', async () => {
     console.log('🔁 Running deal state update job...');
 
     const now = new Date();
@@ -18,7 +18,7 @@ cron.schedule('0 * * * *', async () => {
         let newState = 'Draft';
         if (deal.state === 'Draft') {
             const createdPlus24h = new Date(deal.createdate.getTime() + 24 * 60 * 60 * 1000);
-            if (now.getTime() >= createdPlus24h.getTime() && now.getTime() < deal.livedate.getTime()) {
+            if (now.getTime() >= createdPlus24h.getTime()) {
                 newState = 'Upcoming';
             }
         } else if (deal.state === 'Upcoming') {

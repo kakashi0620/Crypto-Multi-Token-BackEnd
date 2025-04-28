@@ -54,6 +54,7 @@ router.get('/list/:dealname', async (req, res) => {
 
 router.get('/summary/:dealname', async (req, res) => {
     const { dealname } = req.params;
+    console.log(`invest summary received => deal name: ${dealname}`)
 
     try {
         const result = await Invest.aggregate([
@@ -79,12 +80,18 @@ router.get('/summary/:dealname', async (req, res) => {
                 }
             }
         ]);
-        
-        if (result.length === 0) {
-            return res.status(404).json({ message: 'Deal not found' });
+
+        let investorCount = 0
+        let totalAmount = 0
+        if (result.length > 0) {
+            investorCount = result[0].investorCount
+            totalAmount = result[0].totalAmount
         }
 
-        res.json(result[0]);
+        res.json({
+            investorCount: investorCount,
+            totalAmount: totalAmount,
+        });
     } catch (error) {
         console.error('Error fetching summary:', error);
         res.status(500).json({ message: 'Server error' });
