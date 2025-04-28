@@ -1,16 +1,18 @@
 const express = require('express');
 const router = express.Router();
 
+const Deal = require("../models/deal");
 const Payment = require("../models/payment");
 const Distribution = require("../models/distribution");
 
 
 // Admin - Delete the current Payment
 router.post("/pay", async (req, res) => {
-    console.log(`Deal: ${req.body.dealname} Batch: ${req.body.batch}, Amount: ${req.body.amount}`)
+    const dealname = req.body.dealname;
+    console.log(`Deal: ${dealname} Batch: ${req.body.batch}, Amount: ${req.body.amount}`)
 
     const newPayment = new Payment({
-        dealname: req.body.dealname,
+        dealname: dealname,
         batch: req.body.batch,
         network: req.body.network,
         wallet: req.body.wallet,
@@ -20,6 +22,7 @@ router.post("/pay", async (req, res) => {
 
     try {
         res.send(await newPayment.save());
+        updateDealStateToComplete(dealname)
     } catch (error) {
         return res.status(400).json({ message: error });
     }
@@ -60,6 +63,7 @@ router.get("/canpay/:dealname", async (req, res) => {
     }
 });
 
+// Helper functions.
 const getCurBatch = async (dealname) => {
     const now = new Date();
 
@@ -75,6 +79,24 @@ const getCurBatch = async (dealname) => {
     }
     
     return ""
+}
+
+const updateDealStateToComplete = async(dealname) => {
+    const schedulesBefore = await Distribution.find({
+        dealname,
+        date: { $lte: new Date() }
+    });
+
+    const totalReceived = schedulesBefore.reduce((sum, item) => sum + item.percent, 0);
+    if (totalReceived === 100) {
+        const deal = await Deal.findOne({ name: dealname })
+
+        const newState = 'Completed'
+        if (deal.state !== newState) {
+            await Deal.updateOne({ _id: deal._id }, { $set: { state: newState } });
+            console.log('Deal state updated to Completed.')
+        }
+    }
 }
 
 module.exports = router;
