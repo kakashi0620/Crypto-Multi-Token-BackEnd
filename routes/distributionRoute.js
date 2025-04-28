@@ -30,7 +30,7 @@ router.post("/add", async (req, res) => {
             console.log('Deal state updated to Distributing.')
         }
     }
-    catch(e) {
+    catch (e) {
         console.log('Fetching deal data error:', e)
     }
 
@@ -95,6 +95,34 @@ router.get("/summary", async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Something went wrong' });
+    }
+});
+
+router.get("/getcurbatch/:dealname", async (req, res) => {
+    const { dealname } = req.params;
+    console.log(`Get current batch received => dealname: ${dealname}`)
+
+    const now = new Date();
+
+    // Find distributions for the dealname, before or equal to now
+    const distributions = await Distribution.find({
+        dealname: dealname,
+        date: { $lte: now },
+    }).sort({ date: -1 }); // Sort by date descending
+
+    if (distributions.length > 0) {
+        const latest = distributions[0];
+        console.log(`  Current batch => ${latest.type} ${latest.percent}`)
+
+        res.json({
+            type: latest.type,
+            percent: latest.percent
+        })
+    }
+    else {
+        const err = "Batch not found."
+        console.error(err);
+        res.status(500).json({ error: err });
     }
 });
 
