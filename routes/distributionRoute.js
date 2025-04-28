@@ -69,28 +69,31 @@ router.get("/summary", async (req, res) => {
             date: { $gt: targetDate }
         }).sort({ date: 1 });
 
-        if (nextSchedule === null) {
-            res.json({
-                type: 'No schedule',
-                date: 'No schedule',
-                totalReceived: 0,
-                percent: 0
-            });
+        let nextType = 'No schedule'
+        let nextDate = 'No schedule'
+        let totalReceived = 0
+        let nextPercent = 0
+        if (nextSchedule !== null) {
+            nextType = nextSchedule.type
+            nextDate = nextSchedule.date
+            nextPercent = nextSchedule.percent
         }
-        else {
-            const schedulesBefore = await Distribution.find({
-                dealname,
-                date: { $lte: targetDate }
-            });
 
-            const totalReceived = schedulesBefore.reduce((sum, item) => sum + item.percent, 0);
-            res.json({
-                type: nextSchedule.type,
-                date: nextSchedule.date,
-                totalReceived,
-                percent: nextSchedule.percent
-            });
+        const schedulesBefore = await Distribution.find({
+            dealname,
+            date: { $lte: targetDate }
+        });
+        if (schedulesBefore !== null) {
+            totalReceived = schedulesBefore.reduce((sum, item) => sum + item.percent, 0);
         }
+
+        res.json({
+            type: nextType,
+            date: nextDate,
+            totalReceived,
+            percent: nextPercent
+        });
+
 
     } catch (err) {
         console.error(err);

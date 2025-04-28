@@ -33,8 +33,6 @@ router.get("/canpay/:dealname", async (req, res) => {
     console.log(`Can pay query received => dealname: ${dealname}`)
 
     const curBatch = await getCurBatch(dealname)
-    
-    console.log(`curBatch: ${curBatch}`)
     if (curBatch === "") {
         res.json({
             can: false
@@ -46,11 +44,9 @@ router.get("/canpay/:dealname", async (req, res) => {
         const payments = await Payment.find({
             dealname: dealname
         })
-        console.log(`payments: ${payments}`)
-    
+
         if (payments.length > 0) {
             const latest = payments[payments.length - 1];
-            console.log(`latest: ${latest}`)
             res.json({
                 can: (latest.batch !== curBatch)
             })
@@ -62,6 +58,42 @@ router.get("/canpay/:dealname", async (req, res) => {
         }
     }
 });
+
+router.get("/total/:dealname", async (req, res) => {
+    console.log(`Get total payment amount received`, req.params)
+    const { dealname } = req.params;  // Get dealname from query params
+
+    if (!dealname) {
+        return res.status(400).json({ error: 'dealname is required' });
+    }
+
+    try {
+        const summary = await Payment.aggregate([
+            { $match: { dealname } },  // Match the dealname from query
+            {
+                $group: {
+                    _id: "$dealname", // group by dealname
+                    totalAmount: { $sum: "$amount" } // sum amounts
+                }
+            },
+            {
+                $project: {
+                    _id: 0,             // hide _id
+                    dealname: "$_id",   // rename _id to dealname
+                    totalAmount: 1
+                }
+            }
+        ]);
+
+        if (summary.length > 0)
+            res.json({totalAmount: summary[0].totalAmount});
+        else
+            res.json({totalAmount: 0});
+    } catch (error) {
+        console.error('Error aggregating payments', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+})
 
 // Helper functions.
 const getCurBatch = async (dealname) => {
@@ -77,11 +109,11 @@ const getCurBatch = async (dealname) => {
         const latest = distributions[0];
         return latest.type
     }
-    
+
     return ""
 }
 
-const updateDealStateToComplete = async(dealname) => {
+const updateDealStateToComplete = async (dealname) => {
     const schedulesBefore = await Distribution.find({
         dealname,
         date: { $lte: new Date() }
