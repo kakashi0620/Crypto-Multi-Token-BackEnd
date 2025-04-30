@@ -1,22 +1,46 @@
 const mongoose = require("mongoose");
 
 const referralSchema = mongoose.Schema({
-    userId: {
+    dealname: {
         type: String,
         required: true
     },
-    totalAmount: {
+    date: {
+        type: Date,
+        required: false
+    },
+    chain: {
         type: String,
         required: false
     },
-    stackAmount: {
+    wallet: {
         type: String,
         required: false
     },
-    status: {
+    from: {
+        type: String,
+        required: false
+    },
+    to: {
+        type: String,
+        required: false
+    },
+    toname: {
+        type: String,
+        required: false
+    },
+    level: {
         type: String,
         default: false
     },
+    amount: {
+        type: Number,
+        default: false
+    },
+    state: {
+        type: String,
+        default: 'Waiting'
+    }
 });
 
 
