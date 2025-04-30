@@ -188,7 +188,8 @@ async function getReferralFamily(userName, amount) {
         const reward = parseFloat((amount * referralPercents[level - 1]).toFixed(2));
 
         result.push({
-            from: fromUserId,
+            fromid: fromUserId,
+            fromname: currentUser.userName,
             toid: referrer.userId,
             toname: referrer.userName,
             level,
@@ -208,13 +209,17 @@ const addReferral = async (investor, dealname, amount) => {
         for (let i = 0; i < family.length; i++) {
             const newReferral = new Referral({
                 dealname: dealname,
-                from: family[i].from,
+                date: new Date(),
+                chain: "",
+                wallet: "",
+                from: family[i].fromid,
+                fromname: family[i].fromname,
                 to: family[i].toid,
                 toname: family[i].toname,
                 level: family[i].level,
                 amount: family[i].amount,
             });
-            
+
             await newReferral.save()
         }
         

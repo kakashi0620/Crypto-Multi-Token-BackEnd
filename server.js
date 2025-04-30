@@ -21,6 +21,7 @@ const dealsRoute = require("./routes/dealsRoute");
 const investsRoute = require("./routes/investRoute");
 const distributionsRoute = require("./routes/distributionRoute");
 const paymentsRoute = require("./routes/paymentRoute");
+const referralsRoute = require("./routes/referralRoute");
 
 app.use(express.json());
 
@@ -29,6 +30,7 @@ app.use("/api/deals", dealsRoute); //const dealModel = mongoose.model("deal", de
 app.use("/api/invests", investsRoute); //const dealModel = mongoose.model("deal", dealSchema);
 app.use("/api/distributions", distributionsRoute); //const dealModel = mongoose.model("deal", dealSchema);
 app.use("/api/payments", paymentsRoute); //const dealModel = mongoose.model("deal", dealSchema);
+app.use("/api/referrals", referralsRoute); //const dealModel = mongoose.model("deal", dealSchema);
 
 app.use("/upload", express.static(path.join(__dirname, "upload")));
 
