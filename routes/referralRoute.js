@@ -32,7 +32,7 @@ router.delete("/deleteReferral/:id", async (req, res) => {
 });
 
 router.get("/withdrawable/:userid", async (req, res) => {
-    const {userid} = req.params
+    const { userid } = req.params
     console.log(`Get withdrawable data for ${userid}`)
     try {
         const withdrawables = await getWithdrawableGrouped(userid, 'Waiting');
@@ -43,46 +43,117 @@ router.get("/withdrawable/:userid", async (req, res) => {
     }
 });
 
+router.get("/history/:userid", async (req, res) => {
+    const { userid } = req.params
+    console.log(`Get history data for ${userid}`)
+    try {
+        const withdrawables = await getHistory(userid);
+        res.send(withdrawables);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+});
+
+router.post("/withdraw/:userid", async (req, res) => {
+    const { userid } = req.params
+    if (userid === null || userid === undefined)
+        return
+
+    console.log(`Get history data for ${userid}`)
+    try {
+        const result = await Referral.updateMany(
+            { to: userid, state: 'Waiting' },
+            { $set: { state: 'Pending' } }
+          );
+        res.send(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+});
+
 // Helper functions.
 async function getWithdrawableGrouped(userId, state) {
     const result = await Referral.aggregate([
-      {
-        $match: {
-          to: userId,
-          state: state,
+        {
+            $match: {
+                to: userId,
+                state: state,
+            },
         },
-      },
-      {
-        $group: {
-          _id: {
-            level: '$level',
-            from: '$from',
-            date: '$date',
-            chain: '$chain',
-            wallet: '$wallet',
-            state: '$state',
-          },
-          amount: { $sum: '$amount' },
+        {
+            $group: {
+                _id: {
+                    level: '$level',
+                    from: '$from',
+                    date: '$date',
+                    chain: '$chain',
+                    wallet: '$wallet',
+                    state: '$state',
+                },
+                amount: { $sum: '$amount' },
+            },
         },
-      },
-      {
-        $project: {
-          _id: 0,
-          level: '$_id.level',
-          from: '$_id.from',
-          date: '$_id.date',
-          chain: '$_id.chain',
-          wallet: '$_id.wallet',
-          amount: 1,
-          state: '$_id.state',
+        {
+            $project: {
+                _id: 0,
+                level: '$_id.level',
+                from: '$_id.from',
+                date: '$_id.date',
+                chain: '$_id.chain',
+                wallet: '$_id.wallet',
+                amount: 1,
+                state: '$_id.state',
+            },
         },
-      },
-      {
-        $sort: { level: 1 } // Optional: Sort by level
-      }
+        {
+            $sort: { level: 1 } // Optional: Sort by level
+        }
     ]);
-  
+
     return result;
-  }
+}
+
+async function getHistory(userId) {
+    const result = await Referral.aggregate([
+        {
+            $match: {
+                to: userId,
+                state: { $ne: 'Waiting' }
+            },
+        },
+        {
+            $group: {
+                _id: {
+                    level: '$level',
+                    from: '$from',
+                    date: '$date',
+                    chain: '$chain',
+                    wallet: '$wallet',
+                    state: '$state',
+                },
+                amount: { $sum: '$amount' },
+            },
+        },
+        {
+            $project: {
+                _id: 0,
+                level: '$_id.level',
+                from: '$_id.from',
+                date: '$_id.date',
+                chain: '$_id.chain',
+                wallet: '$_id.wallet',
+                amount: 1,
+                state: '$_id.state',
+            },
+        },
+        {
+            $sort: { level: 1 } // Optional: Sort by level
+        }
+    ]);
+
+    return result;
+}
 
 module.exports = router;
