@@ -160,6 +160,16 @@ router.delete("/deleteUser/:id", async (req, res) => {
     }
 });
 
+router.get("/getLastUserId", async (req, res) => {
+    try {
+        const lastUser = await User.findOne().sort({ _id: -1 });
+
+        res.send(lastUser.userId);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+});
 
 
 module.exports = router;

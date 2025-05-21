@@ -9,7 +9,7 @@ const Deal = require("../models/deal");
 
 
 // Update deal state every hour.
-cron.schedule('0 * * * *', async () => {
+cron.schedule('* * * * *', async () => {
     console.log('🔁 Running deal state update job...');
 
     const now = new Date();
